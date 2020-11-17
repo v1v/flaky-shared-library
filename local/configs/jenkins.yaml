@@ -1,0 +1,65 @@
+jenkins:
+  systemMessage: "Configured automatically with JCasC plugin"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  labelString: flyweight
+  mode: EXCLUSIVE
+  numExecutors: 5
+  remotingSecurity:
+    enabled: false
+  scmCheckoutRetryCount: 2
+  nodes:
+  - permanent:
+      labelString: "local linux immutable windows windows-2016 windows-2019 macosx"
+      launcher:
+        jnlp:
+          workDirSettings:
+            disabled: true
+            failIfWorkDirIsMissing: false
+            internalDir: "remoting"
+            workDirPath: "/tmp"
+      name: "local"
+      numExecutors: 10
+      remoteFS: "/tmp"
+      retentionStrategy: "always"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              ## see https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#using-properties-file
+              description: GitHub user @${readFile:/run/secrets/user} User + Personal Access Token
+              id: UserAndToken
+              password: ${readFile:/run/secrets/key}
+              scope: GLOBAL
+              username: ${readFile:/run/secrets/user}
+
+unclassified:
+  location:
+    url: http://localhost:8080/
+  globalLibraries:
+    libraries:
+      - name: "shared-library"
+        defaultVersion: "current"
+        implicit: true
+        retriever:
+          legacySCM:
+            scm:
+              filesystem:
+                clearWorkspace: false
+                copyHidden: false
+                path: "/var/pipeline-library"
+                filterSettings:
+                  includeFilter: false
+                  selectors:
+                  - wildcard: "build/**"
+                  - wildcard: "local/**"
+                  - wildcard: "gradle/**"
+                  - wildcard: "gradle*"
+                  - wildcard: "*gradle"
+                  - wildcard: "*.md"
+jobs:
+  - file: "/var/pipeline-library/src/test/resources/folders/it.dsl"
+  - file: "/var/pipeline-library/src/test/resources/jobs/echo.dsl"
