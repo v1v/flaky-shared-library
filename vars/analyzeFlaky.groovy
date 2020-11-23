@@ -20,19 +20,15 @@ import groovy.text.StreamingTemplateEngine
 def call(Map args = [:]) {
   def es = args.get('es', 'localhost:9200')
   def flakyReportIdx = args.get('flakyReportIdx', 'reporter-flaky')
-  def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
-  def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
-  def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
+  def testsErrors = args.containsKey('testsErrors', [])
+  def flakyThreshold = args.get('flakyThreshold', 0.0)
+  def testsSummary = args.get('testsSummary', [:])
   def querySize = args.get('querySize', 500)
   def queryTimeout = args.get('queryTimeout', '20s')
 
   def labels = 'flaky-test,ci-reported'
   def flakyTestsWithIssues = [:]
   def genuineTestFailures = []
-
-  if (!flakyReportIdx?.trim()) {
-    error 'analyzeFlakey: did not receive flakyReportIdx data'
-  }
 
   // Only if there are test failures to analyse
   if(testsErrors.size() > 0) {
@@ -42,8 +38,8 @@ def call(Map args = [:]) {
     // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
     def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
     def flakeyTestsRaw = sendDataToElasticsearch(es: es,
-                                                data: queryFilter(queryTimeout, flakyThreshold),
-                                                restCall: query)
+                                                 data: queryFilter(queryTimeout, flakyThreshold),
+                                                 restCall: query)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
 
     // Normalise both data structures with their names
@@ -129,9 +125,9 @@ def queryFilter(timeout, flakyThreshold) {
 /**
  * This method returns a string with the template filled with groovy variables
  */
-def buildTemplate(params) {
-    def template = params.containsKey('template') ? params.template : 'groovy-html-custom.template'
+def buildTemplate(args) {
+    def template = args.get('template', 'flaky-github-comment-markdown.template')
     def fileContents = libraryResource(template)
     def engine = new StreamingTemplateEngine()
-    return engine.createTemplate(fileContents).make(params).toString()
+    return engine.createTemplate(fileContents).make(args).toString()
 }
