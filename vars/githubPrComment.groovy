@@ -89,7 +89,7 @@ def getCommentIfAny(Map args = [:]) {
   if (commentId?.trim() && commentId.isInteger()) {
     id = commentId as Integer
   } else {
-    echo "githubPrLatestComment: failed. Therefore a new GitHub comment will be created. For further details see ${e}"
+    echo "githubPrLatestComment: failed. Therefore a new GitHub comment will be created."
   }
   return id
 }
