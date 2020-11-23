@@ -48,9 +48,9 @@ def call(Map args = [:]) {
   }
 
   if (ghLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
+    echo 'gh: get the ghLocation from cache.'
   } else {
-    log(level: 'DEBUG', text: 'gh: set the ghLocation.')
+    echo 'gh: set the ghLocation.'
     ghLocation = pwd(tmp: true)
   }
 
@@ -83,7 +83,13 @@ def runCommand(command, flagsCommand) {
 }
 
 def downloadInstaller(where) {
-  def url = 'https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.tar.gz'
+  def url = 'https://github.com/cli/cli/releases/download/v1.2.1/gh_1.2.1_linux_amd64.tar.gz'
+  if (isUnix()) {
+    def uname = sh script: 'uname', returnStdout: true
+    if (uname.startsWith("Darwin")) {
+      url = 'https://github.com/cli/cli/releases/download/v1.2.1/gh_1.2.1_macOS_amd64.tar.gz'
+    }
+  }
   def tarball = 'gh.tar.gz'
   dir(where) {
     sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")

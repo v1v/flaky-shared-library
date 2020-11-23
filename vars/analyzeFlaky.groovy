@@ -18,7 +18,7 @@
 import groovy.text.StreamingTemplateEngine
 
 def call(Map args = [:]) {
-  def es = args.get('es', 'localhost:9200')
+  def es = args.get('es', 'http://elasticsearch:9200')
   def flakyReportIdx = args.get('flakyReportIdx', 'reporter-flaky')
   def testsErrors = args.get('testsErrors', [:])
   def flakyThreshold = args.get('flakyThreshold', 0.0)
@@ -62,6 +62,7 @@ def call(Map args = [:]) {
           "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": env.BUILD_URL,
+          "commit": env.GIT_COMMIT,
           "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
           "testData": testsErrors?.find { it.name.equals(k) }])
       if (v?.trim()) {
