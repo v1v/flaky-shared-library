@@ -23,12 +23,23 @@ pipeline {
   }
   post {
     cleanup {
-      sh "curl http://localhost:8080/blue/rest/organizations/jenkins/pipelines/${JOB_NAME}/runs/${BUILD_NUMBER}/tests/?status=FAILED -o tests-errors.json"
-      sh "curl http://localhost:8080/blue/rest/organizations/jenkins/pipelines/${JOB_NAME}/runs/${BUILD_NUMBER}/blueTestSummary/ -o tests-summary.json"
+      fetchData()
       analyzeFlaky(flakyReportIdx: 'reporter-flaky',
                     es: 'localhost:9200',
                     testsErrors: readJSON(file: 'tests-errors.json'),
                     testsSummary: readJSON(file: 'tests-summary.json'))
     }
   }
+}
+
+def fetchData() {
+  def restURLJob = "http://localhost:8080/blue/rest/organizations/jenkins/pipelines/${JOB_NAME}/"
+  def restURLBuild = "${restURLJob}runs/${BUILD_NUMBER}"
+
+  def scriptFile = 'generate-build-data.sh'
+  def resourceContent = libraryResource(scriptFile)
+  writeFile file: scriptFile, text: resourceContent
+  sh(label: 'generate-build-data', returnStatus: true, script: """#!/bin/bash -x
+    chmod 755 ${scriptFile}
+    ./${scriptFile} ${restURLJob} ${restURLBuild} ${currentBuild.currentResult} ${currentBuild.duration}""")
 }
