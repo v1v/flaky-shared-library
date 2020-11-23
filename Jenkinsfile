@@ -25,10 +25,9 @@ pipeline {
     cleanup {
         // TODO fetch tests errors
         // TODO fetch testsSummary
-      analyzeFlaky(flakyReportIdx: 'reporter-flaky-shared-library-master',
-                    es: '',
-                    secret: '',
-                    testsErrors: ''
+      analyzeFlaky(flakyReportIdx: 'reporter-flaky',
+                    es: 'localhost:9200',
+                    testsErrors: '',
                     testsSummary: '')
     }
   }

@@ -1,5 +1,5 @@
 ES ?= localhost:9200
-INDEX ?= ci-builds
+INDEX ?= reporter-flaky
 .PHONY: create-flaky-index
 create-flaky-index:
 	@curl -X PUT -H 'Content-Type: application/json' \
