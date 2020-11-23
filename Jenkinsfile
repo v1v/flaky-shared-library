@@ -24,6 +24,7 @@ pipeline {
   post {
     cleanup {
       fetchData()
+      archive('*.json')
       analyzeFlaky(flakyReportIdx: 'reporter-flaky',
                     es: 'http://elasticsearch:9200',
                     testsErrors: readJSON(file: 'tests-errors.json'),
