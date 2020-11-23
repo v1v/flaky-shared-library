@@ -10,6 +10,7 @@ build:
 .PHONY: start
 start:
 	@env docker-compose --file docker-compose.yml up --detach --no-recreate
+	open http://localhost:8080
 
 .PHONY: stop
 stop:
