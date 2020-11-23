@@ -55,8 +55,7 @@ This is an example of a shared library for the Jenkins pipelines based on:
 ## How to test it
 
 ```bash
-  ./gradlew clean test
-  open build/reports/tests/test/index.html
+  ./mvnw clean test
 ```
 
 ### How to test it within the local Jenkins instance
@@ -117,12 +116,13 @@ You can configure this jenkins instance as you wish, if so please change:
 * local/configs/jenkins.yaml using the [JCasC](https://jenkins.io/projects/jcasc/)
 * local/configs/plugins.txt
 
-
 ## What's next?
 
-- Be able to programmatically run functional tests.
+- Configure the flaky ES data
 
-
+```bash
+  make -C resources create-flaky-index add-flaky-failure get-flaky-failure
+```
 ## Further details
 
 This is a subset of what it has been implemented in the https://github.com/elastic/apm-pipeline-library and https://github.com/v1v/jenkins-pipeline-library-skeleton
