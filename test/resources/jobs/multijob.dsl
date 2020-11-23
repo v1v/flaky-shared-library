@@ -12,7 +12,7 @@ multibranchPipelineJob(NAME) {
           id('20200109') // IMPORTANT: use a constant and unique identifier
           credentialsId('UserAndToken')
           repoOwner('v1v')
-          repository('its-gitbase')
+          repository('flaky-shared-library')
           repositoryUrl('https://github.com/v1v/flaky-shared-library')
           configuredByUrl(false)
           traits {
