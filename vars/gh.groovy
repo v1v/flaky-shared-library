@@ -48,9 +48,9 @@ def call(Map args = [:]) {
   }
 
   if (ghLocation?.trim()) {
-    log(level: 'DEBUG', text: 'gh: get the ghLocation from cache.')
+    echo 'gh: get the ghLocation from cache.'
   } else {
-    log(level: 'DEBUG', text: 'gh: set the ghLocation.')
+    echo 'gh: set the ghLocation.'
     ghLocation = pwd(tmp: true)
   }
 
