@@ -37,7 +37,7 @@ def call(value){
       obj = JSONSerializer.toJSON(value);
     } catch(e){
       //NOOP
-      log(level: 'DEBUG', text: "toJSON: Unable to Parsing JSON: ${e?.message}" )
+      echo "toJSON: Unable to Parsing JSON: ${e?.message}"
     }
   }
   return obj

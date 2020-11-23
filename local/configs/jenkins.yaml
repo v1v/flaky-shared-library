@@ -35,6 +35,12 @@ credentials:
               password: ${readFile:/run/secrets/key}
               scope: GLOBAL
               username: ${readFile:/run/secrets/user}
+          - string:
+              ## see https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#using-properties-file
+              description: GitHub user @${readFile:/run/secrets/user} User + Personal Access Token
+              id: Token
+              secret: ${readFile:/run/secrets/key}
+              scope: GLOBAL
 
 unclassified:
   location:

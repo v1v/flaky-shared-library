@@ -24,12 +24,12 @@
 def call(Map args = [:]) {
   def labels = args.get('labels', [])
   def limit = args.get('limit', 200)
-  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
+  def credentialsId = args.get('credentialsId', 'Token')
   def output = [:]
   def issues
   try {
     // filter all the issues given those labels.
-    issues = gh(command: 'issue list', flags: [label: labels, limit: limit])
+    issues = gh(command: 'issue list', flags: [label: labels, limit: limit], credentialsId: credentialsId)
     if (issues?.trim()) {
       issues.split('\n').each { line ->
         def data = line.split('\t')
@@ -38,8 +38,8 @@ def call(Map args = [:]) {
     }
   } catch (err) {
     // no issues to be reported.
-    log(level: 'WARN', text: "githubIssues: It failed but let's notify the error but keep going. gh command returned: '${issues}' with error: ${err.toString()}")
+    echo "githubIssues: It failed but let's notify the error but keep going. gh command returned: '${issues}' with error: ${err.toString()}"
   }
-  log(level: 'DEBUG', text: "githubIssues: output ${output}.")
+  echo "githubIssues: output ${output}."
   return output
 }

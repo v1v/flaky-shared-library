@@ -18,34 +18,18 @@
 /**
   Send the JSON report file to Elastisearch.
 
-  sendDataToElasticsearch(es: "https://ecs.example.com:9200", secret: "secret", data: '{"field": "value"}')
+  sendDataToElasticsearch(es: "https://ecs.example.com:9200", data: '{"field": "value"}')
 */
 def call(Map args = [:]){
   def es = args.containsKey('es') ? args.es : error("sendDataToElasticsearch: Elasticsearch URL is not valid.")
-  def secret = args.containsKey('secret') ? args.secret : error("sendDataToElasticsearch: secret is not valid.")
   def data = args.containsKey('data') ? args.data : error("sendDataToElasticsearch: data is not valid.")
-  def restCall = args.containsKey('restCall') ? args.restCall : "/jenkins-builds/_doc/"
+  def restCall = args.containsKey('restCall') ? args.restCall : "/ci-builds/_doc/"
   def contentType = args.containsKey('contentType') ? args.contentType : "application/json"
   def method = args.containsKey('method') ? args.method : "POST"
 
-  def props = getVaultSecret(secret: secret)
-  if(props?.errors){
-     error "sendDataToElasticsearch: Unable to get credentials from the vault: " + props.errors.toString()
-  }
-
-  def value = props?.data
-  def user = value?.user
-  def password = value?.password
-  if(data == null || user == null || password == null){
-    error "sendDataToElasticsearch: was not possible to get authentication info to send data."
-  }
-
-  log(level: 'INFO', text: "sendDataToElasticsearch: sending data...")
-
-  def messageBase64UrlPad = base64encode(text: "${user}:${password}", encoding: "UTF-8")
-  return httpRequest(url: "${es}${restCall}", method: "${method}",
-      headers: [
-          "Content-Type": "${contentType}",
-          "Authorization": "Basic ${messageBase64UrlPad}"],
-      data: data.toString() + "\n")
+  echo "sendDataToElasticsearch: sending data..."
+  return httpRequest(url: "${es}${restCall}",
+                     method: "${method}",
+                     headers: ["Content-Type": "${contentType}" ],
+                     data: data.toString() + "\n")
 }

@@ -31,20 +31,17 @@ import groovy.transform.Field
 @Field def ghLocation = ''
 
 def call(Map args = [:]) {
-  if(!isUnix()) {
-    error 'gh: windows is not supported yet.'
-  }
   def command = args.containsKey('command') ? args.command : error('gh: command argument is required.')
-  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
+  def credentialsId = args.get('credentialsId', 'Token')
   def flags = args.get('flags', [:])
 
   // Use the current location as the git repo otherwise uses the env variables to pass
   // the repo information to the gh command
   def isGitWorkspace = sh(label: 'isGitWorkspace', script: 'git rev-list HEAD -1 1> /dev/null 2>&1', returnStatus: true) == 0
   if (isGitWorkspace) {
-    log(level: 'DEBUG', text: 'gh: running within a git workspace.')
+    echo 'gh: running within a git workspace.'
   } else {
-    log(level: 'DEBUG', text: 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set')
+    echo 'gh: running outside of a git workspace. Using REPO_NAME and ORG_NAME if they are set'
     if (env.REPO_NAME?.trim() && env.ORG_NAME?.trim()) {
       flags['repo'] = "${env.ORG_NAME}/${env.REPO_NAME}"
     }
@@ -58,14 +55,12 @@ def call(Map args = [:]) {
   }
 
   withEnv(["PATH+GH=${ghLocation}"]) {
-    if(!isInstalled(tool: 'gh', flag: '--version')) {
-      downloadInstaller(ghLocation)
-    }
+    downloadInstaller(ghLocation)
     withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
       def flagsCommand = ''
       if (flags) {
         flags.each { k, v ->
-          log(level: 'DEBUG', text: "gh: k ${k} - v ${v}")
+          echo "gh: k ${k} - v ${v}"
           if (v instanceof java.util.ArrayList || v instanceof List) {
             v.findAll { it }.each { value ->
               flagsCommand += "--${k}='${normalise(value)}' "
@@ -90,15 +85,9 @@ def runCommand(command, flagsCommand) {
 def downloadInstaller(where) {
   def url = 'https://github.com/cli/cli/releases/download/v1.1.0/gh_1.1.0_linux_amd64.tar.gz'
   def tarball = 'gh.tar.gz'
-  if(isInstalled(tool: 'wget', flag: '--version')) {
-    dir(where) {
-      retryWithSleep(retries: 3, seconds: 5, backoff: true) {
-        sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")
-        sh(label: 'untar gh', script: "tar -xpf ${tarball} --strip-components=2")
-      }
-    }
-  } else {
-    log(level: 'WARN', text: 'gh: wget is not available. gh will not be installed then.')
+  dir(where) {
+    sh(label: 'download gh', script: "wget -q -O ${tarball} ${url}")
+    sh(label: 'untar gh', script: "tar -xpf ${tarball} --strip-components=2")
   }
 }
 

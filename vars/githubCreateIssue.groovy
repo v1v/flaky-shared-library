@@ -23,11 +23,8 @@
 */
 
 def call(Map args = [:]) {
-  if(!isUnix()) {
-    error 'githubCreateIssue: windows is not supported yet.'
-  }
   def assignee = args.get('assign', '')
-  def credentialsId = args.get('credentialsId', '2a9602aa-ab9f-4e52-baf3-b71ca88469c7')
+  def credentialsId = args.get('credentialsId', 'Token')
   def description = args.get('description', '')
   def labels = args.get('labels', '')
   def milestone = args.get('milestone', '')

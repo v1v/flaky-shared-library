@@ -18,9 +18,8 @@
 import groovy.text.StreamingTemplateEngine
 
 def call(Map args = [:]) {
-  def es = args.containsKey('es') ? args.es : error('analyzeFlakey: es parameter is not valid')
-  def secret = args.containsKey('es_secret') ? args.es_secret : null
-  def flakyReportIdx = args.containsKey('flakyReportIdx') ? args.flakyReportIdx : error('analyzeFlakey: flakyReportIdx parameter is not valid')
+  def es = args.get('es', 'localhost:9200')
+  def flakyReportIdx = args.get('flakyReportIdx', 'ci-builds')
   def testsErrors = args.containsKey('testsErrors') ? args.testsErrors : []
   def flakyThreshold = args.containsKey('flakyThreshold') ? args.flakyThreshold : 0.0
   def testsSummary = args.containsKey('testsSummary') ? args.testsSummary : null
@@ -43,7 +42,6 @@ def call(Map args = [:]) {
     // for 500 entries it's about 2500 lines versus 8000 lines if no filter_path
     def query = "/${flakyReportIdx}/_search?size=${querySize}&filter_path=hits.hits._source.test_name,hits.hits._index"
     def flakeyTestsRaw = sendDataToElasticsearch(es: es,
-                                                secret: secret,
                                                 data: queryFilter(queryTimeout, flakyThreshold),
                                                 restCall: query)
     def flakeyTestsParsed = toJSON(flakeyTestsRaw)
@@ -69,28 +67,25 @@ def call(Map args = [:]) {
           "testName": k,
           "jobUrl": env.BUILD_URL,
           "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
-          "commit": env.GIT_BASE_COMMIT?.trim() ?: '',
           "testData": testsErrors?.find { it.name.equals(k) }])
       if (v?.trim()) {
         try {
           issueWithoutUrl = v.startsWith('https') ? v.replaceAll('.*/', '') : v
           githubCommentIssue(id: issueWithoutUrl, comment: issueDescription)
         } catch(err) {
-          log(level: 'WARN', text: "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}")
+          echo "Something bad happened when commenting the issue '${v}'. See: ${err.toString()}"
         }
       } else {
         def title = "Flaky Test [${k}]"
         try {
           if (numberOfCreatedtedIssues < numberOfSupportedIssues) {
-            retryWithSleep(retries: 2, seconds: 5, backoff: true) {
-              issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
-            }
+            issue = githubCreateIssue(title: title, description: issueDescription, labels: labels)
             numberOfCreatedtedIssues++
           } else {
-            log(level: 'INFO', text: "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created.")
+            echo "'${title}' issue has not been created since ${numberOfSupportedIssues} issues has been created."
           }
         } catch(err) {
-          log(level: 'WARN', text: "Something bad happened when creating '${title}' issue. See: ${err.toString()}")
+          echo "Something bad happened when creating '${title}' issue. See: ${err.toString()}"
           issue = ''
         } finally {
           if(!issue?.trim()) {

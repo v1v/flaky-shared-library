@@ -1,0 +1,16 @@
+{
+    "mappings" : {
+        "properties" : {
+            "test_name" : {
+                "type" : "keyword"
+            },
+            "test_score" : {
+                "type" : "float"
+            },
+            "timestamp" : {
+                "type" : "date"
+            }
+        }
+    }
+}
+  
