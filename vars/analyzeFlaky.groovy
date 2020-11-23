@@ -20,7 +20,7 @@ import groovy.text.StreamingTemplateEngine
 def call(Map args = [:]) {
   def es = args.get('es', 'localhost:9200')
   def flakyReportIdx = args.get('flakyReportIdx', 'reporter-flaky')
-  def testsErrors = args.containsKey('testsErrors', [:])
+  def testsErrors = args.get('testsErrors', [:])
   def flakyThreshold = args.get('flakyThreshold', 0.0)
   def testsSummary = args.get('testsSummary', [:])
   def querySize = args.get('querySize', 500)
