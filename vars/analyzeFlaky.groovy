@@ -62,6 +62,7 @@ def call(Map args = [:]) {
           "template": 'flaky-github-issue.template',
           "testName": k,
           "jobUrl": env.BUILD_URL,
+          "commit": env.GIT_COMMIT,
           "PR": env.CHANGE_ID?.trim() ? "#${env.CHANGE_ID}" : '',
           "testData": testsErrors?.find { it.name.equals(k) }])
       if (v?.trim()) {
