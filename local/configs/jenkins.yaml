@@ -60,11 +60,12 @@ unclassified:
                 filterSettings:
                   includeFilter: false
                   selectors:
-                  - wildcard: "build/**"
+                  - wildcard: "target/**"
                   - wildcard: "local/**"
-                  - wildcard: "gradle/**"
-                  - wildcard: "gradle*"
-                  - wildcard: "*gradle"
+                  - wildcard: ".mvn/**"
+                  - wildcard: "test/**"
+                  - wildcard: "mvn*"
+                  - wildcard: "pom.xml"
                   - wildcard: "*.md"
 jobs:
   - file: "/var/pipeline-library/test/resources/jobs/multijob.dsl"
