@@ -125,3 +125,13 @@ def queryFilter(timeout, flakyThreshold) {
                 }
               }"""
 }
+
+/**
+ * This method returns a string with the template filled with groovy variables
+ */
+def buildTemplate(params) {
+    def template = params.containsKey('template') ? params.template : 'groovy-html-custom.template'
+    def fileContents = libraryResource(template)
+    def engine = new StreamingTemplateEngine()
+    return engine.createTemplate(fileContents).make(params).toString()
+}
