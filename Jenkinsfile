@@ -23,12 +23,12 @@ pipeline {
   }
   post {
     cleanup {
-        // TODO fetch tests errors
-        // TODO fetch testsSummary
+      sh "curl http://localhost:8080/blue/rest/organizations/jenkins/pipelines/${JOB_NAME}/runs/${BUILD_NUMBER}/tests/?status=FAILED -o tests-errors.json"
+      sh "curl http://localhost:8080/blue/rest/organizations/jenkins/pipelines/${JOB_NAME}/runs/${BUILD_NUMBER}/blueTestSummary/ -o tests-summary.json"
       analyzeFlaky(flakyReportIdx: 'reporter-flaky',
                     es: 'localhost:9200',
-                    testsErrors: '',
-                    testsSummary: '')
+                    testsErrors: readJSON(file: 'tests-errors.json'),
+                    testsSummary: readJSON(file: 'tests-summary.json'))
     }
   }
 }
