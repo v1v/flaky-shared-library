@@ -55,7 +55,10 @@ def call(Map args = [:]) {
   }
 
   withEnv(["PATH+GH=${ghLocation}"]) {
-    downloadInstaller(ghLocation)
+    def isGhInstalled = sh(script: 'gh --version', returnStatus: true)
+    if(isGhInstalled != 0) {
+      downloadInstaller(ghLocation)
+    }
     withCredentials([string(credentialsId: "${credentialsId}", variable: 'GITHUB_TOKEN')]) {
       def flagsCommand = ''
       if (flags) {
