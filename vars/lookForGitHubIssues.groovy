@@ -44,8 +44,11 @@ def call(Map args = [:]) {
             output[testName] = ''
           }
         }
+      } else {
+        flakyList.each { output.put(it, '') }
       }
     } catch (err) {
+      echo "lookForGitHubIssues: err ${err}."
       // no issues could be found, let's report the list of test failures without any issue details.
       flakyList.each { output.put(it, '') }
     }

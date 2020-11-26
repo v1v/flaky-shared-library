@@ -2,6 +2,7 @@ ansicolor
 blueocean
 cloudbees-folder
 configuration-as-code
+copyartifact
 git
 filesystem_scm
 jdk-tool

@@ -5,13 +5,13 @@
 * **PR:** ${PR?.trim() ?: 'None'}
 * **Commit:** ${commit?.trim() ?: 'None'}
 
-<% if (testData?.errorDetails?.trim()) {%>
+<% if (!(testData?.errorDetails?.toString().equals('null') || testData?.errorDetails?.trim())) {%>
 ### Error details
 ```
 ${testData.errorDetails}
 ```
 <% }%>
-<% if (testData?.errorStackTrace?.trim()) {%>
+<% if (!(testData?.errorStackTrace?.toString().equals('null') || testData?.errorStackTrace?.trim())) {%>
 ### Stack Trace
 ```
 ${testData.errorStackTrace}
