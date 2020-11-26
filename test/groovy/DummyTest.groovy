@@ -30,6 +30,6 @@ class DummyTest extends PipelineTestHelper {
 
   @Test
   void test_true() throws Exception {
-    assertTrue(true)
+    assertTrue(false)
   }
 }
