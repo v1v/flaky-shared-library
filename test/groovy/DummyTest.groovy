@@ -17,6 +17,7 @@
 
 import org.junit.Before
 import org.junit.Test
+import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 import base.PipelineTestHelper
 
@@ -31,5 +32,10 @@ class DummyTest extends PipelineTestHelper {
   @Test
   void test_true() throws Exception {
     assertTrue(true)
+  }
+
+  @Test
+  void test_false() throws Exception {
+    assertFalse(true)
   }
 }
