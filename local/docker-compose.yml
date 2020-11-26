@@ -3,7 +3,7 @@ version: "3.7"
 services:
   jenkins-flaky:
     build: .
-    container_name: jenkins-pipeline-library
+    container_name: jenkins-pipeline-library-flaky
     environment:
       CASC_JENKINS_CONFIG: /var/jenkins_home/casc_configs
       JAVA_OPTS: >-
@@ -11,7 +11,7 @@ services:
         -Dhudson.model.UsageStatistics.disabled=true
     volumes:
       - type: volume
-        source: jenkins_home_pipeline_library
+        source: jenkins_home_pipeline_library_flaky
         target: /var/jenkins_home
       - type: bind
         source: ./configs/jenkins.yaml
@@ -33,7 +33,7 @@ services:
       - "8080:8080"
       - "50000:50000"
     networks:
-      pipeline-library:
+      pipeline-library-flaky:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-7.10.0}
@@ -64,7 +64,7 @@ services:
     volumes:
       - esdata:/usr/share/elasticsearch/data
     networks:
-      pipeline-library:
+      pipeline-library-flaky:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-7.10.0}
@@ -86,13 +86,13 @@ services:
       elasticsearch:
         condition: service_healthy
     networks:
-      pipeline-library:
+      pipeline-library-flaky:
 
 volumes:
-  jenkins_home_pipeline_library:
+  jenkins_home_pipeline_library_flaky:
   esdata:
     driver: local
 
 networks:
-  pipeline-library:
+  pipeline-library-flaky:
     driver: bridge
