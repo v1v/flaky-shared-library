@@ -26,6 +26,9 @@ def call(Map args = [:]) {
   def querySize = args.get('querySize', 500)
   def queryTimeout = args.get('queryTimeout', '20s')
 
+  // Prepare the env variables.
+  setGitEnv()
+
   def labels = 'flaky-test,ci-reported'
   def flakyTestsWithIssues = [:]
   def genuineTestFailures = []
