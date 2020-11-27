@@ -32,4 +32,9 @@ class DummyTest extends PipelineTestHelper {
   void test_true() throws Exception {
     assertTrue(true)
   }
+
+  @Test
+  void test_false_again() throws Exception {
+    assertTrue(false)
+  }
 }
